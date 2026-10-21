@@ -8,7 +8,7 @@ export const CONFIG = {
   TICKER: 'STAR',
   CA: '',          // token mint address. '' → "AWAITING CA"
   BUY_URL: '',     // '' → derived as https://pump.fun/coin/<CA> once CA is set
-  X_URL: '',       // e.g. 'https://x.com/<handle>'. '' → "SOON"
+  X_URL: 'https://x.com/projectstarcoin',     // e.g. 'https://x.com/<handle>'. '' → "SOON"
   TREASURY: '',    // optional PUBLIC wallet address. '' → treasury card hidden
 
   // ── STEP 1 · COMMIT (publish BEFORE the snapshot; from scripts/make-commit.mjs) ──
