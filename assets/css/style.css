@@ -63,6 +63,7 @@ code{white-space:nowrap;font-family:var(--monof);font-size:.86em;color:var(--ice
 .dl-elem{position:absolute;left:0;top:0;padding:.45rem .6rem;border-left:1px solid rgba(170,205,255,.35);background:linear-gradient(90deg,rgba(8,14,32,.32),transparent);color:#8fa3cc;font-size:.52rem;line-height:1.65;opacity:0;transition:opacity 1s}
 .dl-elem.on{opacity:.75}.dl-elem b{color:#e6efff;font-weight:400}.dl-elem span{color:#5f6f96}
 @media (max-width:900px){.dl-ticker{left:4vw;right:4vw;bottom:auto;top:13.2rem;font-size:.5rem;white-space:normal;line-height:1.6;border-radius:12px}.dl-elem{font-size:.48rem}}
+@media (max-width:640px){.dl-ticker{display:none}}
 @media (prefers-reduced-motion:reduce){.dl-ticker,.dl-chip,.dl-lead{transition:opacity .01s}}
 
 /* nav */

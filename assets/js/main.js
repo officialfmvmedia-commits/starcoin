@@ -160,6 +160,22 @@ function field(k, v, cls) { const el = $(`[data-f="${k}"]`); if (!el) return; el
 function link(k, href, text) { const el = $(`[data-f="${k}"]`); if (el) el.innerHTML = `<a href="${href}" target="_blank" rel="noopener">${text}</a>`; }
 const committed = !!(C.SNAPSHOT_UTC && C.ENTROPY_COMMITMENT);
 const revealed = !!(R.ENTROPY && R.SNAPSHOT_SHA256 && ca);
+// tense of the hero/origin copy follows the provenance state (future until the reveal is filled)
+{
+  const setT = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+  if (revealed) {
+    setT('lede-claim', 'The first coin whose address was decided by the Starlink constellation.');
+    setT('origin-h2', "The address wasn't chosen.<br>It was <em>observed.</em>");
+    setT('origin-p1', "Most coins get a random address from a laptop. $STAR's came from the sky.");
+    setT('origin-p3', 'We committed to one exact future second. At that second we froze the entire constellation, hashed it, and let it decide the mint. Then we published everything so you can do the math yourself.');
+  } else if (C.SNAPSHOT_UTC && !isNaN(Date.parse(C.SNAPSHOT_UTC))) {
+    const d = new Date(C.SNAPSHOT_UTC);
+    const tm = d.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit' });
+    const dy = d.toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric' });
+    const when = Date.now() < d.getTime() ? `will be decided by the Starlink constellation at ${tm} ET, ${dy}` : `is being decided by the Starlink constellation snapshot of ${tm} ET, ${dy}`;
+    setT('lede-claim', `The first coin whose address ${when}.`);
+  }
+}
 if (C.SNAPSHOT_UTC) field('snap-utc', new Date(C.SNAPSHOT_UTC).toISOString().replace('.000Z', 'Z'), 'ok');
 if (C.ENTROPY_COMMITMENT) field('ent-commit', C.ENTROPY_COMMITMENT, 'ok hash');
 if (C.RULES_SHA256) field('rules', C.RULES_SHA256, 'ok hash');

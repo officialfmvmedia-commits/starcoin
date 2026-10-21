@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>$STAR · Starborn — the address decided by the constellation</title>
-<meta name="description" content="$STAR is the first coin whose address was decided by the Starlink constellation in orbit — derived from public orbital data, committed in advance, recomputable by anyone. Not affiliated with SpaceX.">
+<meta name="description" content="$STAR is the first coin whose address is decided by the Starlink constellation in orbit — derived from public orbital data, committed in advance, recomputable by anyone. Not affiliated with SpaceX.">
 <meta name="theme-color" content="#03050c">
 <link rel="icon" href="assets/img/favicon.png">
 <!-- Social cards: replace with absolute URLs (https://<domain>/assets/img/og.jpg) once the domain is set -->
 <meta property="og:type" content="website">
 <meta property="og:title" content="$STAR · Starborn">
-<meta property="og:description" content="Born from the constellation. Proven on-chain. The first coin whose address was decided by ~10,000 satellites in orbit.">
+<meta property="og:description" content="Born from the constellation. Proven on-chain. The first coin whose address is decided by ~10,000 satellites in orbit.">
 <meta property="og:url" content="https://projectstarcoin.fun">
 <meta property="og:image" content="https://projectstarcoin.fun/assets/img/og.jpg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
@@ -73,7 +73,7 @@
     <div class="kicker mono">$STAR · STARBORN</div>
     <h1 class="h-logo"><img src="assets/img/logo-star-glow.png" alt="STAR"></h1>
     <p class="tagline">Born from the constellation.<br><em>Proven on-chain.</em></p>
-    <p class="lede">The first coin whose address was decided by the Starlink constellation. You're floating inside it right now: every light here is a real satellite, 550 km up, live.</p>
+    <p class="lede"><span id="lede-claim">The first coin whose address will be decided by the Starlink constellation.</span> You're floating inside it right now: every light here is a real satellite, 550 km up, live.</p>
     <div class="ca-bar mono" id="ca-bar">
       <span class="ca-k">CA</span><span class="ca-v" id="ca-v">AWAITING CA</span>
       <button class="ca-copy" id="ca-copy" hidden>COPY</button>
@@ -111,12 +111,12 @@
   <div class="wrap two">
     <div>
       <div class="kicker mono">01 · ORIGIN</div>
-      <h2>The address wasn't chosen.<br>It was <em>observed.</em></h2>
+      <h2 id="origin-h2">The address won't be chosen.<br>It will be <em>observed.</em></h2>
     </div>
     <div class="prose">
-      <p>Most coins get a random address from a laptop. $STAR's came from the sky.</p>
+      <p id="origin-p1">Most coins get a random address from a laptop. $STAR's will come from the sky.</p>
       <p>Right now about ten thousand Starlink satellites are circling the planet in thin shells, 340 to 570 km up, each one tracked and published as a two-line orbital element set. Those numbers are public, they change constantly, and nobody controls all of them at once.</p>
-      <p>We committed to one exact future second. At that second we froze the entire constellation, hashed it, and let it decide the mint. Then we published everything so you can do the math yourself.</p>
+      <p id="origin-p3">We committed to one exact future second. At that second we freeze the entire constellation, hash it, and let it decide the mint. Then we publish everything so you can do the math yourself.</p>
       <p class="dim small">Orbital data: <a href="https://celestrak.org" target="_blank" rel="noopener">CelesTrak</a> public GP elements. $STAR is a community memecoin and is not affiliated with, endorsed by, or connected to SpaceX or Starlink.</p>
     </div>
   </div>
@@ -238,7 +238,7 @@ echo -n &lt;REVEALED_ENTROPY&gt; | xxd -r -p | sha256sum</pre>
     <details><summary>Is the globe real?</summary><p>Yes. Every point is a real Starlink satellite from CelesTrak's public element set, moved forward to this second in your browser with SGP4, the standard model for these elements. The day/night line comes from the Sun's position at the current UTC time. Tap a point to see which satellite it is.</p></details>
     <details><summary>Are you SpaceX? Is this a Starlink product?</summary><p>No. $STAR is an independent community memecoin. We use public orbital data that anyone can download. We aren't affiliated with, endorsed by, or connected to SpaceX or Starlink in any way, and we don't use their logos or trademarks.</p></details>
     <details><summary>Couldn't you just keep re-rolling until you liked the address?</summary><p>No. The snapshot second, the rules and the entropy hash are all published before the snapshot. Each one is fixed, so there's exactly one valid answer. If the revealed values don't hash to what we committed, the proof fails in public.</p></details>
-    <details><summary>Why does the satellite count change?</summary><p>Satellites launch, deorbit and get re-cataloged constantly. The live globe shows the latest public set. The snapshot that decided the address is frozen forever as a file anyone can hash.</p></details>
+    <details><summary>Why does the satellite count change?</summary><p>Satellites launch, deorbit and get re-cataloged constantly. The live globe shows the latest public set. The snapshot that decides the address is frozen forever as a file anyone can hash.</p></details>
     <details><summary>What is the "decider" satellite?</summary><p>Just for fun: the derived seed also points at one satellite in the snapshot, and we highlight it on the globe after launch. It doesn't control anything. It's the satellite that happened to be on duty that second.</p></details>
     <details><summary>Does any of this make $STAR worth something?</summary><p>No. The provenance proves where the address came from, and that's all. $STAR is a memecoin with no intrinsic value, no promised returns, and no roadmap obligations. Prices can go to zero.</p></details>
   </div>
