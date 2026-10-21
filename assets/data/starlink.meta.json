@@ -1,0 +1,10 @@
+{
+ "source": "https://celestrak.org/NORAD/elements/gp.php?GROUP=starlink&FORMAT=3le",
+ "fetched_at": "2026-10-21T21:37:11.000Z",
+ "count": 10648,
+ "epoch_newest": "2026-10-21T14:15:30.418Z",
+ "epoch_median": "2026-10-21T03:47:55.312Z",
+ "raw_sha256": "0337c73fc93f611677aa55e2eb8a1b7ac23d7b1d7a597f6d4697a010f7892986",
+ "canonical_sha256": "0e6733e30ad923895b8678a0485fcaccf0468f122de064a2e715f50049a0fdd4",
+ "note": "Public orbital data from CelesTrak. Not affiliated with SpaceX or Starlink."
+}

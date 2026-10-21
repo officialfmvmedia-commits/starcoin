@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>$STAR · Starborn — the address decided by the constellation</title>
+<meta name="description" content="$STAR is the first coin whose address was decided by the Starlink constellation in orbit — derived from public orbital data, committed in advance, recomputable by anyone. Not affiliated with SpaceX.">
+<meta name="theme-color" content="#03050c">
+<link rel="icon" href="assets/img/favicon.png">
+<!-- Social cards: replace with absolute URLs (https://<domain>/assets/img/og.jpg) once the domain is set -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="$STAR · Starborn">
+<meta property="og:description" content="Born from the constellation. Proven on-chain. The first coin whose address was decided by ~10,000 satellites in orbit.">
+<meta property="og:image" content="assets/img/og.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="$STAR · Starborn">
+<meta name="twitter:description" content="Born from the constellation. Proven on-chain.">
+<meta name="twitter:image" content="assets/img/og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@200;300;400;500&family=JetBrains+Mono:wght@400;500&family=Michroma&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+</head>
+<body class="is-loading">
+
+<!-- ░░ LOADER ░░ -->
+<div id="loader" aria-hidden="true">
+  <div class="ld-inner">
+    <img class="ld-logo" src="assets/img/logo-star-glow.png" alt="">
+    <div class="ld-bar"><i id="ld-fill"></i></div>
+    <div class="ld-status mono" id="ld-status">ACQUIRING CONSTELLATION</div>
+    <p class="ld-tip"><span class="mono">TIP</span> Every satellite overhead is a public number. Snapshot all of them at one committed second and you get entropy nobody — not even us — could have picked.</p>
+  </div>
+</div>
+
+<!-- ░░ THE SKY (fixed WebGL) ░░ -->
+<canvas id="sky" aria-label="Live 3D Earth with the Starlink constellation propagated from public orbital data"></canvas>
+<div class="nebula" aria-hidden="true"></div>
+<div class="veil" aria-hidden="true"></div><div class="veil2" aria-hidden="true"></div>
+<div id="sat-label" class="sat-label mono" aria-hidden="true"></div>
+
+<nav class="nav">
+  <a href="#top" class="brand"><img src="assets/img/logo-star.png" alt="$STAR"></a>
+  <div class="nav-links mono">
+    <a href="#origin">Origin</a><a href="#proof">Proof</a><a href="#verify">Verify</a><a href="#token">Token</a><a href="#faq">FAQ</a>
+    <a class="nav-x" data-x href="#" aria-label="$STAR on X">𝕏</a>
+  </div>
+</nav>
+
+<main>
+<!-- ░░ HERO ░░ -->
+<section id="top" class="hero">
+  <div class="hud hud-tl mono">
+    <div class="hud-row"><i class="live"></i>LIVE CONSTELLATION · public orbital data</div>
+    <div class="hud-row dim" id="hud-utc">UTC --:--:--</div>
+  </div>
+  <div class="hud hud-tr mono">
+    <div class="hud-k">SATELLITES</div><div class="hud-v" id="hud-count">—</div>
+    <div class="hud-k">TLE SET AGE</div><div class="hud-v" id="hud-age">—</div>
+    <div class="hud-k">SOURCE</div><div class="hud-v" id="hud-src">—</div>
+    <div class="hud-k">TIME</div>
+    <div class="hud-v warp" role="group" aria-label="Time warp">
+      <button data-warp="1" class="on">LIVE</button><button data-warp="60">60×</button><button data-warp="600">600×</button>
+    </div>
+  </div>
+
+  <div class="hero-txt">
+    <div class="kicker mono">$STAR · STARBORN</div>
+    <h1 class="h-logo"><img src="assets/img/logo-star-glow.png" alt="STAR"></h1>
+    <p class="tagline">Born from the constellation.<br><em>Proven on-chain.</em></p>
+    <p class="lede">The first coin whose address was decided by the Starlink constellation in orbit. Ten thousand public numbers, frozen at one committed second.</p>
+    <div class="ca-bar mono" id="ca-bar">
+      <span class="ca-k">CA</span><span class="ca-v" id="ca-v">AWAITING CA</span>
+      <button class="ca-copy" id="ca-copy" hidden>COPY</button>
+    </div>
+    <div class="ctas">
+      <a class="btn btn-solid" id="btn-buy" href="#token">BUY $STAR · <span>SOON</span></a>
+      <a class="btn" href="#proof">SEE THE PROOF</a>
+    </div>
+  </div>
+
+  <div class="hud hud-bl mono" id="hud-sat">
+    <div class="hud-k">TRACKING</div>
+    <div class="sat-name" id="sat-name">—</div>
+    <div class="sat-grid">
+      <span>NORAD</span><b id="sat-norad">—</b>
+      <span>ALT</span><b id="sat-alt">—</b>
+      <span>VEL</span><b id="sat-vel">—</b>
+      <span>LAT/LON</span><b id="sat-ll">—</b>
+      <span>INCL</span><b id="sat-inc">—</b>
+      <span>STATE</span><b id="sat-sun">—</b>
+    </div>
+    <div class="hud-hint dim">drag to orbit · tap a satellite</div>
+  </div>
+  <div class="hud hud-br mono">
+    <div>RENDERING <b id="hud-render">—</b></div>
+    <div class="dim">NOT AFFILIATED WITH SPACEX</div>
+  </div>
+  <a class="scroll-cue mono" href="#origin">SCROLL</a>
+</section>
+
+<!-- ░░ ORIGIN ░░ -->
+<section id="origin" class="origin">
+  <div class="wrap two">
+    <div>
+      <div class="kicker mono">01 · ORIGIN</div>
+      <h2>The address wasn't chosen.<br>It was <em>observed.</em></h2>
+    </div>
+    <div class="prose">
+      <p>Most coins get a random address from a laptop. $STAR's came from the sky.</p>
+      <p>Right now about ten thousand Starlink satellites are circling the planet in thin shells, 340 to 570 km up, each one tracked and published as a two-line orbital element set. Those numbers are public, they change constantly, and nobody controls all of them at once.</p>
+      <p>We committed to one exact future second. At that second we froze the entire constellation, hashed it, and let it decide the mint. Then we published everything so you can do the math yourself.</p>
+      <p class="dim small">Orbital data: <a href="https://celestrak.org" target="_blank" rel="noopener">CelesTrak</a> public GP elements. $STAR is a community memecoin and is not affiliated with, endorsed by, or connected to SpaceX or Starlink.</p>
+    </div>
+  </div>
+  <div class="wrap shells" id="shells">
+    <div class="shells-head mono"><span>THE CONSTELLATION, BY ORBITAL SHELL</span><span class="dim" id="shells-note">computed live from the loaded data</span></div>
+    <div class="shell-rows" id="shell-rows"></div>
+  </div>
+</section>
+
+<!-- ░░ PROOF ░░ -->
+<section id="proof" class="proof">
+  <div class="wrap">
+    <div class="kicker mono">02 · PROVENANCE</div>
+    <h2>Four steps.<br>No trust required.</h2>
+    <div class="status-pill mono" id="proof-status"><i></i>COMMIT PENDING · CA DROPPING SOON</div>
+    <ol class="steps">
+      <li class="step" id="st-commit">
+        <div class="st-n mono">01</div><h3>COMMIT</h3>
+        <p>Before anything happens we publish a hash of the rules, a hash of 32 bytes of secret entropy, and the exact future UTC second of the snapshot. After this, nobody can change the recipe.</p>
+        <dl class="fields mono">
+          <dt>SNAPSHOT UTC</dt><dd data-f="snap-utc">PENDING</dd>
+          <dt>COUNTDOWN</dt><dd data-f="countdown">—</dd>
+          <dt>sha256(entropy)</dt><dd data-f="ent-commit">PENDING</dd>
+          <dt>sha256(rules)</dt><dd data-f="rules">PENDING</dd>
+        </dl>
+      </li>
+      <li class="step" id="st-snapshot">
+        <div class="st-n mono">02</div><h3>SNAPSHOT</h3>
+        <p>At that second we download the whole Starlink element set from CelesTrak, every satellite, then canonicalize it: sort by NORAD id, one <code>NAME / LINE1 / LINE2</code> block each, LF endings, and SHA-256 the result.</p>
+        <dl class="fields mono">
+          <dt>SATELLITES</dt><dd data-f="snap-n">PENDING</dd>
+          <dt>sha256(snapshot)</dt><dd data-f="snap-hash">PENDING</dd>
+          <dt>RAW FILE</dt><dd data-f="snap-url">PENDING</dd>
+        </dl>
+      </li>
+      <li class="step" id="st-derive">
+        <div class="st-n mono">03</div><h3>DERIVE</h3>
+        <p>The sky and the committed entropy go through HKDF-SHA256, which produces 32 bytes. Those bytes are the Ed25519 seed of the mint keypair, the same thing as Solana's <code>Keypair.fromSeed</code>.</p>
+        <pre class="formula mono">seed = HKDF-SHA256(
+  ikm  = entropy ‖ sha256(snapshot),
+  salt = "STAR-MINT-v1",
+  info = "STARLINK-GP|" + snapshot_utc,
+  L    = 32 )
+mint = Ed25519.fromSeed(seed).publicKey</pre>
+        <dl class="fields mono">
+          <dt>MINT</dt><dd data-f="mint">AWAITING CA</dd>
+          <dt>DECIDER SAT</dt><dd data-f="decider">PENDING</dd>
+        </dl>
+      </li>
+      <li class="step" id="st-prove">
+        <div class="st-n mono">04</div><h3>PROVE</h3>
+        <p>Once the mint exists we reveal the entropy and publish the raw snapshot and the script. Anyone can check that the entropy matches the commitment and the snapshot matches its hash, and that the result is the CA.</p>
+        <dl class="fields mono">
+          <dt>ENTROPY</dt><dd data-f="entropy">SEALED UNTIL MINT</dd>
+          <dt>VERIFIED</dt><dd data-f="verified">—</dd>
+        </dl>
+      </li>
+    </ol>
+    <p class="why dim"><b>Why the secret entropy?</b> The snapshot is public the instant it's taken. If the sky alone made the seed, anyone could compute the mint's key at the same moment we do and race us to it. The sealed entropy stops that. The committed hash proves we couldn't swap it later, and the sky proves we couldn't pick the outcome in advance.</p>
+  </div>
+</section>
+
+<!-- ░░ VERIFY ░░ -->
+<section id="verify" class="verify">
+  <div class="wrap two">
+    <div>
+      <div class="kicker mono">03 · VERIFY</div>
+      <h2>Recompute it yourself.</h2>
+      <p>The script is short, has zero dependencies, and runs on Node 18+. It canonicalizes the snapshot, checks the hashes and derives the address, then names the satellite that "decided" it.</p>
+      <div class="skyhash">
+        <div class="mono k">THE SKY YOU'RE LOOKING AT · HASHES TO</div>
+        <div class="mono v" id="skyhash">computing…</div>
+        <div class="mono dim s" id="skyhash-note">sha256 of the canonical snapshot loaded on this page</div>
+      </div>
+    </div>
+    <div>
+<pre class="code mono"><span class="c"># 1 · get the published snapshot + script</span>
+git clone &lt;repo&gt; star &amp;&amp; cd star
+
+<span class="c"># 2 · recompute (no npm install needed)</span>
+node scripts/derive-star-address.mjs \
+  --snapshot proof/snapshot.tle \
+  --time     &lt;SNAPSHOT_UTC&gt; \
+  --entropy  &lt;REVEALED_ENTROPY&gt; \
+  --expect   &lt;CA&gt;
+
+<span class="c"># → "match": true, plus the decider satellite</span>
+
+<span class="c"># also check: sha256(entropy) == commitment</span>
+echo -n &lt;REVEALED_ENTROPY&gt; | xxd -r -p | sha256sum</pre>
+      <p class="dim small">Want a dry run before launch? <code>node scripts/derive-star-address.mjs --test</code> runs a public test vector (entropy = 00…1f) against the bundled constellation.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ TOKEN ░░ -->
+<section id="token" class="token">
+  <div class="wrap">
+    <div class="kicker mono">04 · TOKEN</div>
+    <h2>$STAR</h2>
+    <div class="tok-grid">
+      <div class="tok-card"><div class="k mono">CONTRACT</div><div class="v mono" id="tok-ca">AWAITING CA</div><div class="s mono" id="tok-ca-links"></div></div>
+      <div class="tok-card"><div class="k mono">MARKET CAP</div><div class="v" id="tok-mc">—</div><div class="s mono" id="tok-mc-s">PRE-LAUNCH</div></div>
+      <div class="tok-card"><div class="k mono">NETWORK</div><div class="v">Solana</div><div class="s mono">fair launch</div></div>
+      <div class="tok-card" id="tok-treasury" hidden><div class="k mono">TREASURY</div><div class="v" id="tok-tre-bal">—</div><div class="s mono" id="tok-tre-addr"></div></div>
+    </div>
+    <div class="ctas">
+      <a class="btn btn-solid" id="btn-buy2" href="#token">BUY $STAR · <span>SOON</span></a>
+      <a class="btn" data-x href="#">𝕏 · <span>SOON</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ FAQ ░░ -->
+<section id="faq" class="faq">
+  <div class="wrap narrow">
+    <div class="kicker mono">05 · FAQ</div>
+    <h2>Questions from the ground.</h2>
+    <details><summary>Is the globe real?</summary><p>Yes. Every point is a real Starlink satellite from CelesTrak's public element set, moved forward to this second in your browser with SGP4, the standard model for these elements. The day/night line comes from the Sun's position at the current UTC time. Tap a point to see which satellite it is.</p></details>
+    <details><summary>Are you SpaceX? Is this a Starlink product?</summary><p>No. $STAR is an independent community memecoin. We use public orbital data that anyone can download. We aren't affiliated with, endorsed by, or connected to SpaceX or Starlink in any way, and we don't use their logos or trademarks.</p></details>
+    <details><summary>Couldn't you just keep re-rolling until you liked the address?</summary><p>No. The snapshot second, the rules and the entropy hash are all published before the snapshot. Each one is fixed, so there's exactly one valid answer. If the revealed values don't hash to what we committed, the proof fails in public.</p></details>
+    <details><summary>Why does the satellite count change?</summary><p>Satellites launch, deorbit and get re-cataloged constantly. The live globe shows the latest public set. The snapshot that decided the address is frozen forever as a file anyone can hash.</p></details>
+    <details><summary>What is the "decider" satellite?</summary><p>Just for fun: the derived seed also points at one satellite in the snapshot, and we highlight it on the globe after launch. It doesn't control anything. It's the satellite that happened to be on duty that second.</p></details>
+    <details><summary>Does any of this make $STAR worth something?</summary><p>No. The provenance proves where the address came from, and that's all. $STAR is a memecoin with no intrinsic value, no promised returns, and no roadmap obligations. Prices can go to zero.</p></details>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <img class="foot-logo" src="assets/img/logo-star-glow.png" alt="STAR">
+    <p class="foot-tag">Born from the constellation. Proven on-chain.</p>
+    <div class="foot-links mono"><a href="#proof">Proof</a><a href="#verify">Verify</a><a data-x href="#">𝕏</a><a href="https://celestrak.org" target="_blank" rel="noopener">Data: CelesTrak</a></div>
+    <p class="legal">$STAR is a memecoin for entertainment. It isn't an investment, security or financial product, and nothing here is financial advice. Crypto is volatile and you can lose everything you put in. $STAR is not affiliated with, endorsed by, or connected to SpaceX, Starlink or any satellite operator. "Starlink" refers only to the public name of the satellites whose public orbital elements we use. Orbital elements come from CelesTrak, and positions are approximate (SGP4).</p>
+    <p class="legal dim mono">© 2026 STARBORN · PUBLIC DATA · PUBLIC MATH</p>
+  </div>
+</footer>
+
+<script type="module" src="assets/js/main.js"></script>
+</body>
+</html>
