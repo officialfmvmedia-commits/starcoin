@@ -13,7 +13,7 @@ python3 -m http.server 4950     # then open http://localhost:4950
 |---|---|
 | `index.html` | page and meta tags. Set absolute `og:image` / `twitter:image` URLs once the domain exists |
 | `config.js` | **the only file to edit at launch**: CA, BUY_URL, X_URL, TREASURY, COMMIT and REVEAL fields, TLE options |
-| `assets/js/orbit.js` | Three.js Earth (day/night/specular/clouds and a Fresnel atmosphere), the real Sun position for the current UTC, satellites, picking and the orbit ring |
+| `assets/js/orbit.js` | **In-shell hero.** The camera rides about 25 m beside a real 53° shell satellite at around 550 km. The far field is every satellite, as GPU-interpolated SGP4 keyframes in camera-relative km. The near field is the 44 nearest real satellites (14 on mobile), propagated on the main thread every frame and drawn as panel+wing bodies with sun-tracking wings, specular glints, motion streaks and real orbit rails. The Milky Way is procedural, aligned to the real galactic plane and the current sidereal time, and baked once into a cubemap. Earth is only a faint limb. Scrolling pulls the camera back to reveal the shell arcs |
 | `assets/js/sgp4-worker.js` | Web Worker that runs SGP4 on the whole constellation and posts keyframes. The GPU interpolates between them |
 | `assets/js/main.js` | loader, TLE loading, HUD, shell stats, sky hash, provenance state, DexScreener and RPC |
 | `assets/data/starlink.tle` (+ `.meta.json`) | bundled CelesTrak Starlink element set |
@@ -32,6 +32,8 @@ Refresh the bundled set before each deploy, or on a cron:
 node scripts/fetch-tles.mjs
 ```
 CelesTrak updates GP data about every 2 h. If you download the same GROUP+FORMAT again before it changes, it returns **403 "has not updated"**. That's expected, and the script keeps the existing file. Don't hammer it.
+
+Visual honesty: positions are real, but neighbours more than a few km away are drawn **enlarged** so they read as satellites (the HUD says so). The host you ride with is true scale.
 
 Performance: desktop renders up to 12,000 satellites, and mobile subsamples to 4,000 (the HUD shows "rendered / total"). Satellites that fail SGP4 because they've decayed are dropped and counted.
 

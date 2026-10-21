@@ -22,8 +22,8 @@ function epochMs(l1) {
   const yy = +l1.slice(18, 20), day = parseFloat(l1.slice(20, 32));
   return Date.UTC(yy < 57 ? 2000 + yy : 1900 + yy, 0, 1) + (day - 1) * 86400000;
 }
-// ECF km → three.js coords in Earth radii (x=lon0, y=north, z=-lon90E)
-function toThree(out, o, p) { out[o] = p.x / RE; out[o + 1] = p.z / RE; out[o + 2] = -p.y / RE; }
+// ECF km → three.js coords in km (x=lon0, y=north, z=-lon90E)
+function toThree(out, o, p) { out[o] = p.x; out[o + 1] = p.z; out[o + 2] = -p.y; } // km
 
 self.onmessage = (ev) => {
   const m = ev.data;
@@ -42,7 +42,7 @@ self.onmessage = (ev) => {
       const pv = S.propagate(r, t0);
       if (r.error || !pv || !pv.position) continue;
       recs.push(r);
-      meta.push({ name: s.name, norad: +s.l1.slice(2, 7), inc: +s.l2.slice(8, 16), mm: +s.l2.slice(52, 63), ecc: +('0.' + s.l2.slice(26, 33).trim()), epoch: epochMs(s.l1) });
+      meta.push({ l1: s.l1, l2: s.l2, name: s.name, norad: +s.l1.slice(2, 7), inc: +s.l2.slice(8, 16), mm: +s.l2.slice(52, 63), ecc: +('0.' + s.l2.slice(26, 33).trim()), epoch: epochMs(s.l1) });
     }
     const epochs = all.map((s) => epochMs(s.l1)).sort((a, b) => a - b);
     self.postMessage({ type: 'ready', total: all.length, sampled: pick.length < all.length, meta, epochNewest: epochs[epochs.length - 1], epochMedian: epochs[epochs.length >> 1] });

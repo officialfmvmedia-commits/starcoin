@@ -36,12 +36,16 @@ try {
       if (k === 'sats') { setProg('sats', 1, `PROPAGATING ${info.rendered.toLocaleString()} ORBITS`); onSatsReady(info); }
     },
     onFirstFrame: () => { setProg('sats', 1, 'LOCKED'); setTimeout(hideLoader, 350); },
-    onSelect: (s) => { $('#sat-label').dataset.name = s.name; $('#sat-name').textContent = s.name + (s.why === 'decider' ? ' · DECIDER' : ''); $('#sat-norad').textContent = s.norad; $('#sat-inc').textContent = s.inc.toFixed(1) + '°'; },
+    onSelect: (s) => { $('#reticle').dataset.name = s.name; $('#sat-name').textContent = s.name + (s.why === 'decider' ? ' · DECIDER' : s.why === 'host' ? ' · RIDING' : ''); $('#sat-norad').textContent = s.norad; $('#sat-inc').textContent = s.inc.toFixed(1) + '°'; },
     onDetail: (d) => {
       $('#sat-alt').textContent = Math.round(d.alt).toLocaleString() + ' km';
       $('#sat-vel').textContent = d.vel.toFixed(2) + ' km/s';
+      $('#sat-rng').textContent = d.range < 1 ? Math.round(d.range * 1000) + ' m' : d.range < 100 ? d.range.toFixed(1) + ' km' : Math.round(d.range).toLocaleString() + ' km';
       $('#sat-ll').textContent = `${Math.abs(d.lat).toFixed(1)}°${d.lat >= 0 ? 'N' : 'S'} ${Math.abs(d.lon).toFixed(1)}°${d.lon >= 0 ? 'E' : 'W'}`;
-      $('#sat-sun').textContent = d.lit ? 'SUNLIT' : 'IN SHADOW';
+      $('#sat-sun').textContent = d.lit ? 'SUNLIT' : 'IN EARTH SHADOW';
+      $('#hud-cam').textContent = `${Math.round(d.camAlt)} km · riding ${d.host}`;
+      $('#reticle').dataset.name = d.name;
+      $('#reticle').dataset.rng = $('#sat-rng').textContent;
     },
   });
 } catch (e) {
@@ -49,10 +53,12 @@ try {
   document.body.classList.add('no-webgl'); hideLoader();
 }
 if (orbit) {
-  const lab = $('#sat-label');
-  orbit.onLabel = (x, y, hidden) => {
-    lab.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
-    lab.classList.toggle('hidden', hidden || scrollY > innerHeight * 0.6);
+  const ret = $('#reticle');
+  orbit.onLabel = (x, y, hidden, range) => {
+    const sz = Math.max(26, Math.min(mobile ? 70 : 110, 60 / Math.pow(Math.max(range, 0.02), 0.35)));
+    ret.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
+    ret.style.setProperty('--s', sz.toFixed(0) + 'px');
+    ret.classList.toggle('hidden', hidden || scrollY > innerHeight * 0.55);
   };
 }
 
@@ -101,9 +107,6 @@ function onSatsReady(i) {
   $('#hud-render').textContent = `${i.rendered.toLocaleString()} / ${i.total.toLocaleString()}` + (i.sampled ? ' · MOBILE LOD' : i.rendered < i.total ? ` · ${i.total - i.rendered} DECAYED` : '');
   $('#hud-src').textContent = tleSource.toUpperCase();
   renderShells(i.meta);
-  // featured tour
-  if (decider && orbit.selectNorad(decider) >= 0) return;
-  startTour(i.meta);
 }
 setInterval(() => {
   const now = orbit ? orbit.simT : Date.now(), d = new Date(now);
@@ -115,21 +118,6 @@ $$('[data-warp]').forEach((b) => b.addEventListener('click', () => {
   $$('[data-warp]').forEach((x) => x.classList.toggle('on', x === b));
   orbit && orbit.setWarp(+b.dataset.warp);
 }));
-
-let tourTimer = 0, userHold = 0;
-function startTour(meta) {
-  // one satellite from each major shell, in rotation
-  const groups = {};
-  meta.forEach((m, i) => { const k = Math.round(m.inc); (groups[k] ||= []).push(i); });
-  const keys = Object.keys(groups).filter((k) => groups[k].length > 50).sort((a, b) => groups[b].length - groups[a].length);
-  let n = 0;
-  const next = () => {
-    if (Date.now() < userHold) return;
-    const g = groups[keys[n++ % keys.length]]; orbit.select(g[(Math.random() * g.length) | 0]);
-  };
-  next(); tourTimer = setInterval(next, 9000);
-}
-$('#sky').addEventListener('pointerup', () => { userHold = Date.now() + 30000; });
 
 function renderShells(meta) {
   const buckets = [
