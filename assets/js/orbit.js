@@ -112,10 +112,11 @@ void main(){
     vec3 n=normalize(tp); float mu=dot(n,uSun); float lit=smoothstep(-.16,.06,mu);
     float cosT=dot(rd,uSun); float pR=.75*(1.+cosT*cosT); float g=.76; float pM=(1.-g*g)/pow(1.+g*g-2.*g*cosT,1.5)*.08;
     vec3 sc=(1.-exp(-BR*colR))*pR + (1.-exp(-BM*colM))*pM;
-    col=sc*lit*sunTint(mu)*1.6;
+    float L=dot(sc,vec3(.30,.50,.20));                               // brand-tinted thin rim (electric blue → soft violet)
+    col=mix(vec3(.22,.48,1.),vec3(.55,.42,1.),smoothstep(8.,40.,hmin))*L*lit*1.1*exp(-max(hmin,0.)/22.);
     // airglow (≈95 km emission layer), visible on the night side
     float ag=exp(-pow((hmin-95.)/3.2,2.));
-    col+=vec3(.22,.95,.45)*ag*.10*(1.-lit*.8);
+    col+=vec3(.45,.40,1.)*ag*.05*(1.-lit*.8);
     col+=vec3(.25,.45,1.)*exp(-max(hmin,0.)/30.)*.008*lit;          // faint haze
     a=clamp(1.-exp(-dot(BR,vec3(colR))*.3),0.,1.)*.6;
   } else {
@@ -123,7 +124,7 @@ void main(){
     float cosV=max(dot(-rd,n),.002); float colR=HR*min(1./cosV,sqrt(6.2831853*R/HR)), colM=HM*min(1./cosV,sqrt(6.2831853*R/HM));
     vec3 T=exp(-(BR*colR+BM*colM));
     vec4 gt=groundTex(n);
-    vec3 ground=gt.rgb*max(mu,0.)*.07 + vec3(1.,.72,.42)*gt.a*.16*(1.-smoothstep(-.12,.12,mu));
+    vec3 ground=gt.rgb*max(mu,0.)*.07 + vec3(.75,.78,1.)*gt.a*.08*(1.-smoothstep(-.12,.12,mu));
     float lit=smoothstep(-.12,.08,mu);
     vec3 sc=(1.-T)*vec3(.55,.75,1.)*lit*sunTint(mu)*.9;
     col=ground*T+sc; a=1.;
@@ -351,16 +352,17 @@ export function createOrbit({ canvas, max, keep = [], onProgress = () => {}, onF
     const a = t * 0.045, s = camSide;
     const back = (mobile ? 0.058 : 0.046) + 0.006 * Math.sin(a) + e * 900;
     const up = (mobile ? -0.027 : 0.0025) + 0.002 * Math.sin(a * 1.3) + e * 260;
-    const side = (mobile ? 0 : s * (0.0105 + 0.0025 * Math.cos(a * 0.7))) - e * 60;
+    const side = (mobile ? 0 : s * (0.0145 + 0.002 * Math.cos(a * 0.7))) - e * 60;
     // lift/lower the camera toward the sun-tracking wing normal so the cell faces are seen, not the edge
     const sn = uSun.value, nb = sn.dot(B), nT = (sn.dot(T) * s), nR = sn.dot(R), nl = Math.hypot(nT, nR) || 1;
-    const elT = Math.max(-0.32, Math.min(0.32, Math.atan2(nR / nl, Math.max(nT / nl, 0.05)) * 0.75)) * (1 - e);
+    // small tilt only, and biased AWAY from the sun's mirror direction (glints come only from the wing sweep)
+    const elT = -Math.max(-0.12, Math.min(0.12, Math.atan2(nR / nl, Math.max(nT / nl, 0.05)) * 0.3)) * (1 - e);
     elC += (elT - elC) * (Math.abs(elT - elC) > 0.6 ? 1 : 0.03);
     camW.copy(hostP).addScaledVector(T, s * back * Math.cos(elC)).addScaledVector(R, up + back * Math.sin(elC) * (1 - e)).addScaledVector(B, side);
     yaw += (tYaw - yaw) * 0.04; pitch += (tPitch - pitch) * 0.04;
     rightAx.copy(B).multiplyScalar(-s);
-    const p0 = (mobile ? 0.2 : 0.06) - elC * 0.85 + pitch + 0.015 * Math.sin(a * 0.8);
-    look.copy(T).multiplyScalar(-s).applyAxisAngle(rightAx, p0).applyAxisAngle(R, yaw + 0.05 * Math.sin(a * 0.5));
+    const p0 = (mobile ? 0.2 : 0.06) - elC * 0.6 + pitch + 0.015 * Math.sin(a * 0.8);
+    look.copy(T).multiplyScalar(-s).applyAxisAngle(rightAx, p0).applyAxisAngle(R, yaw + (mobile ? 0 : -s * 0.1) + 0.05 * Math.sin(a * 0.5));
     tmp.copy(T).multiplyScalar(-s).applyAxisAngle(rightAx, 0.13).applyAxisAngle(R, yaw + 0.25);
     look.lerp(tmp, e).normalize();
     camera.position.set(0, 0, 0); camera.up.copy(R); camera.lookAt(look); camera.updateMatrixWorld();
@@ -418,7 +420,7 @@ export function createOrbit({ canvas, max, keep = [], onProgress = () => {}, onF
         heroG.visible = true; heroG.position.copy(rel); heroG.quaternion.copy(qBody);
         invQ.copy(qBody).invert(); const nl = Y.clone().applyQuaternion(invQ);
         const phi = Math.atan2(nl.z, nl.y); for (const w of hero.wings) w.rotation.x = phi;
-        const refl = sun.clone().negate().reflect(Y), spec = lit ? Math.pow(Math.max(refl.dot(toCam), 0), 40) : 0; heroGlint = spec;
+        const refl = sun.clone().negate().reflect(Y), spec = lit ? Math.pow(Math.max(refl.dot(toCam), 0), 260) : 0; heroGlint = spec;
         for (let w = 0; w < 2; w++) { const gl = hero.glintLocal[w].clone().multiplyScalar(0.001).applyQuaternion(qBody).add(rel); gp.set([gl.x, gl.y, gl.z], (K + w) * 3); gi[K + w] = spec * 1.4; gs[K + w] = 30 + 260 * spec; }
         heroGlintPos.copy(hero.glintLocal[1]).multiplyScalar(0.001).applyQuaternion(qBody).add(rel);
         continue;

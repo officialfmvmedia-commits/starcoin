@@ -35,12 +35,12 @@ function cellMaps(q) {
     const x = i * cw + gap, y = j * ch + gap, w = cw - 2 * gap, h = ch - 2 * gap;
     const path = (g) => { g.beginPath(); g.moveTo(x + cham, y); g.lineTo(x + w - cham, y); g.lineTo(x + w, y + cham); g.lineTo(x + w, y + h - cham); g.lineTo(x + w - cham, y + h); g.lineTo(x + cham, y + h); g.lineTo(x, y + h - cham); g.lineTo(x, y + cham); g.closePath(); };
     const k = rand() * 10;
-    const gr = cg.createLinearGradient(x, y, x + w, y + h); gr.addColorStop(0, `rgb(${18 + k},${30 + k},${78 + k * 2})`); gr.addColorStop(1, `rgb(${10 + k},${18 + k},${52 + k * 2})`);
+    const gr = cg.createLinearGradient(x, y, x + w, y + h); gr.addColorStop(0, `rgb(${14 + k},${26 + k},${84 + k * 2})`); gr.addColorStop(1, `rgb(${6 + k},${12 + k},${44 + k * 2})`);
     path(cg); cg.fillStyle = gr; cg.fill();
     path(hg); hg.fillStyle = '#a0a0a0'; hg.fill();
     path(rg); rg.fillStyle = 'rgb(0,40,0)'; rg.fill();
     // fingers + bus bars
-    cg.fillStyle = 'rgba(210,215,228,.28)'; for (let f = 1; f < 18; f++) cg.fillRect(x, y + (h * f) / 18, w, Math.max(0.6, W / 2048));
+    cg.fillStyle = 'rgba(160,180,220,.12)'; for (let f = 1; f < 18; f++) cg.fillRect(x, y + (h * f) / 18, w, Math.max(0.6, W / 2048));
     for (const bx of [0.28, 0.72]) {
       const xx = x + w * bx; cg.fillStyle = '#d7dbe6'; cg.fillRect(xx - W / 1024, y, W / 512, h);
       hg.fillStyle = '#ffffff'; hg.fillRect(xx - W / 1024, y, W / 512, h);
@@ -96,8 +96,8 @@ export function makeSatKit(quality = 'high') {
   const q = quality === 'high' ? 2048 : 1024;
   const cells = cellMaps(q), back = backMaps(q), foil = foilMaps(quality === 'high' ? 512 : 256), brushed = brushedMaps(512), arr = arrayMaps(quality === 'high' ? 1024 : 512);
   const M = {
-    cells: new THREE.MeshPhysicalMaterial({ ...cells, color: 0x2c3a5c, metalness: 0.05, roughness: 1, normalScale: new THREE.Vector2(0.9, 0.9), specularIntensity: 0.18,
-      clearcoat: 0.35, clearcoatRoughness: 0.32, iridescence: quality === 'high' ? 0.12 : 0, iridescenceIOR: 1.55, iridescenceThicknessRange: [180, 520], envMapIntensity: 0.3 }),
+    cells: new THREE.MeshPhysicalMaterial({ ...cells, color: 0x9aa8c8, metalness: 0.0, roughness: 1, normalScale: new THREE.Vector2(0.9, 0.9), specularIntensity: 0.12,
+      clearcoat: 0.12, clearcoatRoughness: 0.18, iridescence: quality === 'high' ? 0.12 : 0, iridescenceIOR: 1.55, iridescenceThicknessRange: [180, 520], envMapIntensity: 0.12 }),
     back: new THREE.MeshPhysicalMaterial({ ...back, roughness: 0.8, metalness: 0, envMapIntensity: 0.5, sheen: 0.25, sheenColor: new THREE.Color(0x9fb0d0) }),
     frame: new THREE.MeshPhysicalMaterial({ color: 0xc4c8d0, metalness: 1, roughness: 0.28, ...brushed, anisotropy: 0.7 }),
     chassis: new THREE.MeshPhysicalMaterial({ color: 0xb4b9c3, metalness: 1, roughness: 0.34, ...brushed, anisotropy: 0.8, clearcoat: 0.3, clearcoatRoughness: 0.25 }),
