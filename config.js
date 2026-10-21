@@ -13,9 +13,9 @@ export const CONFIG = {
 
   // ── STEP 1 · COMMIT (publish BEFORE the snapshot; from scripts/make-commit.mjs) ──
   COMMIT: {
-    SNAPSHOT_UTC: '',          // e.g. '2026-11-01T18:00:00.000Z' → shows a live countdown
-    ENTROPY_COMMITMENT: '',    // sha256(entropy) hex
-    RULES_SHA256: '',          // sha256 of the rules JSON printed by make-commit
+    SNAPSHOT_UTC: '2026-10-22T00:00:00.000Z',          // e.g. '2026-11-01T18:00:00.000Z' → shows a live countdown
+    ENTROPY_COMMITMENT: 'f78a4262d50befbe565253a8b78a55b9e1e9fc23ea2c22c729b75648b8e6f1b2',    // sha256(entropy) hex
+    RULES_SHA256: '9152441e0623d48d14d44753e81092843d18d5df11a2343d63ffaff07e3610f4',          // sha256 of the rules JSON printed by make-commit
     URL: '',                   // link to the public commit post (X post / gist / tx)
   },
   // ── STEPS 2–4 · REVEAL (fill AFTER the mint exists; from scripts/derive-star-address.mjs) ──

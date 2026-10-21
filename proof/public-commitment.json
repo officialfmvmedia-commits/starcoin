@@ -1,0 +1,7 @@
+{
+ "snapshot_utc": "2026-10-22T00:00:00.000Z",
+ "entropy_commitment_sha256": "f78a4262d50befbe565253a8b78a55b9e1e9fc23ea2c22c729b75648b8e6f1b2",
+ "rules_sha256": "9152441e0623d48d14d44753e81092843d18d5df11a2343d63ffaff07e3610f4",
+ "rules_version": "STAR-MINT-v1",
+ "snapshot_source": "https://celestrak.org/NORAD/elements/gp.php?GROUP=starlink&FORMAT=3le"
+}

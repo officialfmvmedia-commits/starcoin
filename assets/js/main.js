@@ -1,6 +1,8 @@
 // STAR · page logic: data loading, HUD, provenance state, live market data.
 import { CONFIG } from '../../config.js';
 import { createOrbit } from './orbit.js';
+import { createDataLayer } from './datalayer.js';
+let SKYHASH = '';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -53,6 +55,8 @@ try {
   document.body.classList.add('no-webgl'); hideLoader();
 }
 if (orbit) {
+  if (new URLSearchParams(location.search).has('debug')) window.__orbit = orbit;
+  try { createDataLayer(orbit, { root: $('#datalayer'), skyHash: () => SKYHASH }); } catch (e) { console.warn('[datalayer]', e.message); }
   const ret = $('#reticle');
   orbit.onLabel = (x, y, hidden, range) => {
     const sz = Math.max(26, Math.min(mobile ? 70 : 110, 60 / Math.pow(Math.max(range, 0.02), 0.35)));
@@ -145,7 +149,7 @@ async function skyHash(text) {
     s.sort((a, b) => a.norad - b.norad || (a.l1 < b.l1 ? -1 : a.l1 > b.l1 ? 1 : a.l2 < b.l2 ? -1 : a.l2 > b.l2 ? 1 : 0));
     const buf = new TextEncoder().encode(s.map((x) => `${x.name}\n${x.l1}\n${x.l2}\n`).join(''));
     const h = [...new Uint8Array(await crypto.subtle.digest('SHA-256', buf))].map((b) => b.toString(16).padStart(2, '0')).join('');
-    $('#skyhash').textContent = h;
+    $('#skyhash').textContent = h; SKYHASH = h;
     $('#skyhash-note').textContent = `sha256 of ${s.length.toLocaleString()} satellites · ${tleSource} · this is what a snapshot looks like. The real one is frozen at the committed second.`;
   } catch (e) { $('#skyhash').textContent = 'unavailable in this browser'; }
 }
