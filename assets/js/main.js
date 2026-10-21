@@ -1,4 +1,4 @@
-// STAR · page logic: data loading, HUD, provenance state, live market data.
+// STAR · page logic: data loading, HUD, provenance state, treasury balance.
 import { CONFIG } from '../../config.js';
 import { createOrbit } from './orbit.js';
 import { createDataLayer } from './datalayer.js';
@@ -228,19 +228,8 @@ if (ca) {
   $('#tok-ca-links').innerHTML = `<a href="https://solscan.io/token/${ca}" target="_blank" rel="noopener">SOLSCAN ↗</a> <a href="https://dexscreener.com/solana/${ca}" target="_blank" rel="noopener">DEXSCREENER ↗</a>`;
 }
 
-// ── live market data (DexScreener) + optional treasury balance (Solana RPC) ──
-const fmtUSD = (v) => v >= 1e9 ? '$' + (v / 1e9).toFixed(2) + 'B' : v >= 1e6 ? '$' + (v / 1e6).toFixed(2) + 'M' : v >= 1e3 ? '$' + (v / 1e3).toFixed(1) + 'K' : '$' + Math.round(v);
+// ── optional treasury balance (Solana RPC) ──
 function fetchT(url, opts = {}, ms = 9000) { const c = new AbortController(), t = setTimeout(() => c.abort(), ms); return fetch(url, { ...opts, signal: c.signal }).finally(() => clearTimeout(t)); }
-async function pollMcap() {
-  if (!ca) { $('#tok-mc').textContent = '$0'; $('#tok-mc-s').textContent = 'PRE-LAUNCH'; return; }
-  try {
-    const r = await fetchT(CONFIG.DEXSCREENER + ca, {}, 8000); if (!r.ok) throw new Error('HTTP ' + r.status);
-    const j = await r.json();
-    const best = (j.pairs || []).filter((p) => p.chainId === 'solana').map((p) => +(p.marketCap || p.fdv || 0)).filter((v) => v > 0).sort((a, b) => b - a)[0];
-    if (best) { $('#tok-mc').textContent = fmtUSD(best); $('#tok-mc-s').innerHTML = '<i class="live"></i>LIVE · DEXSCREENER'; }
-    else { $('#tok-mc').textContent = '—'; $('#tok-mc-s').textContent = 'AWAITING FIRST TRADE'; }
-  } catch (e) { console.info('[mcap] unavailable:', e.message); $('#tok-mc-s').textContent = 'MARKET DATA UNAVAILABLE'; }
-}
 const RPCS = (CONFIG.RPC_URLS || []).filter(Boolean);
 async function rpc(method, params) {
   let last;
@@ -259,8 +248,8 @@ async function pollTreasury() {
   try { const r = await rpc('getBalance', [t, { commitment: 'confirmed' }]); $('#tok-tre-bal').textContent = (r.value / 1e9).toLocaleString(undefined, { maximumFractionDigits: 3 }) + ' SOL'; }
   catch (e) { $('#tok-tre-bal').textContent = '—'; console.info('[treasury] unavailable:', e.message); }
 }
-pollMcap(); pollTreasury();
-setInterval(() => { if (!document.hidden) { pollMcap(); pollTreasury(); } }, CONFIG.POLL_SECONDS * 1000);
+pollTreasury();
+if ((CONFIG.TREASURY || '').trim()) setInterval(() => { if (!document.hidden) pollTreasury(); }, CONFIG.POLL_SECONDS * 1000);
 
 // ── scroll → camera + veil ──
 const veil = $('.veil'), veil2 = $('.veil2');

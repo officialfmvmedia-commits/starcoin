@@ -40,13 +40,12 @@ export const CONFIG = {
   MAX_SATS_DESKTOP: 12000,
   MAX_SATS_MOBILE: 4000,
 
-  // ── market data (only used once CA is set) ──
+  // ── treasury balance (Solana RPC; only used once TREASURY is set) ──
   RPC_URLS: [
     'https://solana-rpc.publicnode.com',
     'https://api.mainnet-beta.solana.com',
     'https://solana.leorpc.com/?api_key=FREE',
     'https://solana.api.onfinality.io/public',
   ],
-  DEXSCREENER: 'https://api.dexscreener.com/latest/dex/tokens/',
   POLL_SECONDS: 45,
 };

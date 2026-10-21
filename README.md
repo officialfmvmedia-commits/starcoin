@@ -15,7 +15,7 @@ python3 -m http.server 4950     # then open http://localhost:4950
 | `config.js` | **the only file to edit at launch**: CA, BUY_URL, X_URL, TREASURY, COMMIT and REVEAL fields, TLE options |
 | `assets/js/orbit.js` | **In-shell hero.** The camera rides about 25 m beside a real 53° shell satellite at around 550 km. The far field is every satellite, as GPU-interpolated SGP4 keyframes in camera-relative km. The near field is the 44 nearest real satellites (14 on mobile), propagated on the main thread every frame and drawn as panel+wing bodies with sun-tracking wings, specular glints, motion streaks and real orbit rails. The Milky Way is procedural, aligned to the real galactic plane and the current sidereal time, and baked once into a cubemap. Earth is only a faint limb. Scrolling pulls the camera back to reveal the shell arcs |
 | `assets/js/sgp4-worker.js` | Web Worker that runs SGP4 on the whole constellation and posts keyframes. The GPU interpolates between them |
-| `assets/js/main.js` | loader, TLE loading, HUD, shell stats, sky hash, provenance state, DexScreener and RPC |
+| `assets/js/main.js` | loader, TLE loading, HUD, shell stats, sky hash, provenance state, treasury balance via RPC |
 | `assets/data/starlink.tle` (+ `.meta.json`) | bundled CelesTrak Starlink element set |
 | `scripts/fetch-tles.mjs` | refreshes the bundled TLE file |
 | `scripts/make-commit.mjs` | STEP 1: makes the secret entropy (saved to `~/.star-mint/`, outside the repo) and prints the public commitment |
