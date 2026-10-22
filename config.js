@@ -6,8 +6,8 @@
 export const CONFIG = {
   NAME: 'Starborn',
   TICKER: 'STAR',
-  CA: '',          // token mint address. '' → "AWAITING CA"
-  BUY_URL: '',     // '' → derived as https://pump.fun/coin/<CA> once CA is set
+  CA: 'Ajw34HAAG3myVbuCJFsEtvsmicdw1BeRK95E1YLs2qPg',          // token mint address. '' → "AWAITING CA"
+  BUY_URL: 'https://pump.fun/coin/Ajw34HAAG3myVbuCJFsEtvsmicdw1BeRK95E1YLs2qPg',     // '' → derived as https://pump.fun/coin/<CA> once CA is set
   X_URL: 'https://x.com/projectstarcoin',     // e.g. 'https://x.com/<handle>'. '' → "SOON"
   TREASURY: '',    // optional PUBLIC wallet address. '' → treasury card hidden
 
@@ -20,12 +20,12 @@ export const CONFIG = {
   },
   // ── STEPS 2–4 · REVEAL (fill AFTER the mint exists; from scripts/derive-star-address.mjs) ──
   REVEAL: {
-    SNAPSHOT_SHA256: '',       // canonical_sha256 of the snapshot that decided the address
-    SATELLITES: 0,             // satellites in that snapshot
-    ENTROPY: '',               // revealed entropy hex (only after mint!)
-    SNAPSHOT_URL: '',          // where the raw snapshot file is published (e.g. proof/snapshot.tle)
-    DECIDER_NORAD: '',         // NORAD id of the "decider" satellite → highlighted on the globe
-    DECIDER_NAME: '',
+    SNAPSHOT_SHA256: '0e6733e30ad923895b8678a0485fcaccf0468f122de064a2e715f50049a0fdd4',       // canonical_sha256 of the snapshot that decided the address
+    SATELLITES: 10648,             // satellites in that snapshot
+    ENTROPY: 'ffacac4fc20177b322d0eb11d6a803e414036d1de1962b6aa916464ec4aeb08b',               // revealed entropy hex (only after mint!)
+    SNAPSHOT_URL: 'proof/snapshot.tle',          // where the raw snapshot file is published (e.g. proof/snapshot.tle)
+    DECIDER_NORAD: '62025',         // NORAD id of the "decider" satellite → highlighted on the globe
+    DECIDER_NAME: 'STARLINK-32493',
   },
 
   // ── orbital data ──
